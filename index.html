@@ -7,15 +7,12 @@
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
-    <h1>Juntar dois arquivos PDFs</h1>
+    <h1>Juntar até 4 arquivos PDFs</h1>
     
     <!-- Formulário para upload -->
     <form id="upload-form">
-        <label for="pdf1">Selecione o primeiro PDF:</label>
-        <input type="file" id="pdf1" accept="application/pdf" required><br><br>
-
-        <label for="pdf2">Selecione o segundo PDF:</label>
-        <input type="file" id="pdf2" accept="application/pdf" required><br><br>
+        <label for="pdfs">Selecione os PDFs (mínimo 2, máximo 4):</label>
+        <input type="file" id="pdfs" accept="application/pdf" multiple required><br><br>
 
         <button type="submit">Juntar PDFs</button>
     </form>
@@ -24,51 +21,43 @@
     <a id="download-link" style="display: none;" href="#" download="arquivo_combinado.pdf">Baixar PDF Combinado</a>
 
     <script>
-        // Função para juntar os PDFs
-        async function juntarPdfs(pdf1, pdf2) {
+        // Função para juntar múltiplos PDFs
+        async function juntarPdfs(files) {
             const pdfDoc = await PDFLib.PDFDocument.create();
 
-            // Carregar os dois arquivos PDFs
-            const pdfBytes1 = await pdf1.arrayBuffer();
-            const pdfBytes2 = await pdf2.arrayBuffer();
-
-            const pdfDoc1 = await PDFLib.PDFDocument.load(pdfBytes1);
-            const pdfDoc2 = await PDFLib.PDFDocument.load(pdfBytes2);
-
-            // Adicionar páginas do primeiro PDF
-            const copiedPages1 = await pdfDoc.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
-            copiedPages1.forEach((page) => pdfDoc.addPage(page));
-
-            // Adicionar páginas do segundo PDF
-            const copiedPages2 = await pdfDoc.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
-            copiedPages2.forEach((page) => pdfDoc.addPage(page));
+            for (let file of files) {
+                const pdfBytes = await file.arrayBuffer();
+                const pdfDocTemp = await PDFLib.PDFDocument.load(pdfBytes);
+                const copiedPages = await pdfDoc.copyPages(pdfDocTemp, pdfDocTemp.getPageIndices());
+                
+                copiedPages.forEach((page) => pdfDoc.addPage(page));
+            }
 
             // Serializar o documento PDF combinado
-            const pdfBytes = await pdfDoc.save();
-            return pdfBytes;
+            return await pdfDoc.save();
         }
 
         // Manipular o formulário de upload
         document.getElementById('upload-form').addEventListener('submit', async (event) => {
             event.preventDefault();
             
-            const pdf1 = document.getElementById('pdf1').files[0];
-            const pdf2 = document.getElementById('pdf2').files[0];
-
-            if (!pdf1 || !pdf2) {
-                alert("Por favor, selecione dois arquivos PDF.");
+            const files = document.getElementById('pdfs').files;
+            
+            if (files.length < 2 || files.length > 4) {
+                alert("Por favor, selecione entre 2 e 4 arquivos PDF.");
                 return;
             }
 
             try {
                 // Juntar os PDFs
-                const pdfBytes = await juntarPdfs(pdf1, pdf2);
+                const pdfBytes = await juntarPdfs(files);
 
                 // Criar um link para download
                 const downloadLink = document.getElementById('download-link');
                 const blob = new Blob([pdfBytes], { type: 'application/pdf' });
                 downloadLink.href = URL.createObjectURL(blob);
                 downloadLink.style.display = 'inline';
+                downloadLink.innerText = "Baixar PDF Combinado";
             } catch (error) {
                 console.error("Erro ao juntar os PDFs:", error);
                 alert("Ocorreu um erro ao processar os arquivos.");
