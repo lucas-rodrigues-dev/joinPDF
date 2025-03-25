@@ -3,66 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juntar PDFs</title>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <title>Juntar PDF'S</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Juntar até 4 arquivos PDFs</h1>
-    
-    <!-- Formulário para upload -->
-    <form id="upload-form">
-        <label for="pdfs">Selecione os PDFs (mínimo 2, máximo 4):</label>
-        <input type="file" id="pdfs" accept="application/pdf" multiple required><br><br>
+    <div class="header">
+        <h1 class="welcome">Olá, Seja Bem Vindo(a).</h1>
+        <p class="description">Este é um site para juntar PDFs. 
+        <p class="description">Selecione os PDFs que deseja juntar e clique no botão "Juntar PDFs".</p>
+        <p class="description">O arquivo PDF combinado será baixado automaticamente.</p>
+    </div>
 
-        <button type="submit">Juntar PDFs</button>
-    </form>
+    <div class="join-pdf-card">
+        <form id="upload-form">
+            <label for="custom-upload-button">Selecione os PDFs</label>
+            <input type="file" id="custom-upload-button" accept="application/pdf" multiple required><br>
+            <p id="file-count" class="description">Nenhum Arquivo Selecionado</p><br>
+            <button class="submit-button" type="submit">Juntar PDFs</button>
+        </form>
+        <br>
 
-    <br>
-    <a id="download-link" style="display: none;" href="#" download="arquivo_combinado.pdf">Baixar PDF Combinado</a>
+        <p>Para Juntar dois PDF's ou mais<br>escolha no mínimo 2 e no máximo 10</p>
+    </div>
 
-    <script>
-        // Função para juntar múltiplos PDFs
-        async function juntarPdfs(files) {
-            const pdfDoc = await PDFLib.PDFDocument.create();
+    <p>Desenvolvido com ❤️<a class="footer" href="https://instagram.com/lucas.dev.exe/"> Lucas</a></p>
 
-            for (let file of files) {
-                const pdfBytes = await file.arrayBuffer();
-                const pdfDocTemp = await PDFLib.PDFDocument.load(pdfBytes);
-                const copiedPages = await pdfDoc.copyPages(pdfDocTemp, pdfDocTemp.getPageIndices());
-                
-                copiedPages.forEach((page) => pdfDoc.addPage(page));
-            }
-
-            // Serializar o documento PDF combinado
-            return await pdfDoc.save();
-        }
-
-        // Manipular o formulário de upload
-        document.getElementById('upload-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            
-            const files = document.getElementById('pdfs').files;
-            
-            if (files.length < 2 || files.length > 4) {
-                alert("Por favor, selecione entre 2 e 4 arquivos PDF.");
-                return;
-            }
-
-            try {
-                // Juntar os PDFs
-                const pdfBytes = await juntarPdfs(files);
-
-                // Criar um link para download
-                const downloadLink = document.getElementById('download-link');
-                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                downloadLink.href = URL.createObjectURL(blob);
-                downloadLink.style.display = 'inline';
-                downloadLink.innerText = "Baixar PDF Combinado";
-            } catch (error) {
-                console.error("Erro ao juntar os PDFs:", error);
-                alert("Ocorreu um erro ao processar os arquivos.");
-            }
-        });
-    </script>
+    <script src="joinPDF.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </body>
 </html>
