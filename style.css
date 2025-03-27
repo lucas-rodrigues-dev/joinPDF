@@ -102,4 +102,33 @@ input[type="file"] {
 .footer:hover {
     transition: 500ms;
     color: #11ce6f;
+
+@media screen and (max-width: 768px) {
+    * {
+        overflow-y: hidden !important;
+        overflow-x: hidden !important;
+    }
+
+    .header {
+        margin-top: 1rem;
+    }
+
+    .join-pdf-card {
+        width: 70%;
+    }
+
+    .welcome {
+        font-size: 1.5rem;
+    }
+
+    .description {
+        width: 60%;
+        text-align: center;
+        margin-left: auto;    
+        margin-right: auto;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+    }
 }
