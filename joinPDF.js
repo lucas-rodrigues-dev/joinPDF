@@ -36,7 +36,7 @@ document.getElementById('upload-form').addEventListener('submit', async (event) 
 
     const filesInput = fileInput.files;
 
-    if (filesInput.length < 2 || filesInput.length > 10) {
+    if (filesInput.length < 2 || filesInput.length > 20) {
         alert("Por favor, selecione entre 2 e 10 arquivos PDF.");
         return;
     }
